@@ -1,0 +1,6 @@
+*.hex
+*.elf
+*.o
+*.DS_Store
+*.zip
+hw/outputs

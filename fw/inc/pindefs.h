@@ -1,0 +1,16 @@
+#ifndef PINDEFS_H
+#define PINDEFS_H
+
+#define PORTA_I2C_SCL_PIN 2
+#define PORTA_I2C_SDA_PIN 1
+#define PORTA_LED2_R_PIN 3
+#define PORTA_LED2_G_PIN 4
+#define PORTA_LED2_B_PIN 5
+#define PORTA_I2C_PULLUP_PIN 6
+#define PORTA_NFC_INT_PIN 7
+
+#define PORTB_LED2_R_PIN 1
+#define PORTB_LED2_G_PIN 0
+#define PORTB_LED2_B_PIN 2
+
+#endif //PINDEFS_H

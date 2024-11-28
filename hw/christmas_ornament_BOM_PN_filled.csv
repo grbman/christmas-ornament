@@ -1,0 +1,11 @@
+Reference,Value,Datasheet,Footprint,Qty,DNP
+"R2,R3,R5,R6",AC0402JR-07100RL,~,Resistor_SMD:R_0402_1005Metric,4,
+"R7,R8",RC0402FR-1320KL,~,Resistor_SMD:R_0402_1005Metric,2,
+"R1,R4",RC0402FR-071K1L,~,Resistor_SMD:R_0402_1005Metric,2,
+"D1,D2",UHD1110-FKA-CL1A13R3Q1BBQFMF3,~,christmas_ornament:UHD1110-FKA-CL1A13R3Q1BBQFMF3,2,
+U3,ST25DV04K-IER6T3,https://www.st.com/resource/en/datasheet/st25dv04k.pdf,Package_SO:TSSOP-8_4.4x3mm_P0.65mm,1,
+U1,ATtiny404-SS,http://ww1.microchip.com/downloads/en/DeviceDoc/50002687A.pdf,Package_SO:SOIC-14_3.9x8.7mm_P1.27mm,1,
+R11,RC0402JR-07100KL,~,Resistor_SMD:R_0402_1005Metric,1,
+R10,RC0402JR-070RL,~,Resistor_SMD:R_0402_1005Metric,1,
+C1,CL05B104KO5NNND,~,Capacitor_SMD:C_0402_1005Metric,1,
+BT1,BH-67D-5,~,christmas_ornament:BH-67D-5,1,
