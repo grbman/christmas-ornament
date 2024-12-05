@@ -3174,6 +3174,7 @@
 	(symbol
 		(lib_id "christmas_ornament_sym_lib:ST25DV04K-IER6T3")
 		(at 153.67 139.7 0)
+		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3182,7 +3183,7 @@
 		(fields_autoplaced yes)
 		(uuid "1a21b3f6-dcc8-4dc9-b8d7-a4fc914b9ffe")
 		(property "Reference" "U3"
-			(at 155.8641 129.54 0)
+			(at 151.4759 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3191,7 +3192,7 @@
 			)
 		)
 		(property "Value" "ST25DV04K-IER6T3"
-			(at 155.8641 132.08 0)
+			(at 151.4759 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)

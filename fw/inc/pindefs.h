@@ -9,8 +9,8 @@
 #define PORTA_I2C_PULLUP_PIN 6
 #define PORTA_NFC_INT_PIN 7
 
-#define PORTB_LED2_R_PIN 1
-#define PORTB_LED2_G_PIN 0
-#define PORTB_LED2_B_PIN 2
+#define PORTB_LED1_R_PIN 1
+#define PORTB_LED1_G_PIN 0
+#define PORTB_LED1_B_PIN 2
 
 #endif //PINDEFS_H

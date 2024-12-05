@@ -1,17 +1,18 @@
 #include "i2c_bitbang.h"
 
-void dly()
-{
-    volatile uint8_t delay = 16;
-    while(delay--);
-}
+// void dly()
+// {
+//     volatile uint8_t delay = 16;
+//     while(delay--);
+// }
 
 
 void i2c_bitbang_init()
 {
     //set output reg for scl and sda as 0.
     // this will pull the lines low when set as output.
-    PORTA.OUTCLR = (1 << PORTA_I2C_SCL_PIN) | (1 << PORTA_I2C_SDA_PIN);
+    PORTA.OUTCLR = (1 << PORTA_I2C_SDA_PIN);
+    PORTA.OUTCLR = (1 << PORTA_I2C_SCL_PIN);
 
 }
 

@@ -16,7 +16,7 @@
 #define SDA_READ (PORTA.IN & (1 << PORTA_I2C_SDA_PIN))
 
 
-// inline void dly(){asm("nop");};
+inline void dly(){asm("nop");};
 // void dly();
 
 
