@@ -15,8 +15,8 @@
 #define SCL_READ (PORTA.IN & (1 << PORTA_I2C_SCL_PIN))
 #define SDA_READ (PORTA.IN & (1 << PORTA_I2C_SDA_PIN))
 
+void dly();
 
-inline void dly(){asm("nop");};
 // void dly();
 
 

@@ -6,6 +6,7 @@
 //     while(delay--);
 // }
 
+inline void dly(){asm("nop");};
 
 void i2c_bitbang_init()
 {
@@ -62,16 +63,23 @@ bool i2c_bitbang_tx(uint8_t dat)
     return ack;
 }
 
-uint8_t i2c_bitbang_rx(bool ack)
+bool i2c_bitbang_rx(bool ack, uint8_t *data, uint8_t timeout)
 {
     uint8_t dat = 0;
+    uint8_t timeout_cnt = 0;
     SDA_HIGH;
     for( uint8_t i =0; i<8; i++)
     {
         dat <<= 1;
         do{
             SCL_HIGH;
-        }while(SCL_READ == 0);  //clock stretching
+        // }while(SCL_READ == 0 );
+        }while(SCL_READ == 0 && timeout_cnt++ < timeout);  //clock stretching
+        if(timeout_cnt == timeout)
+        {
+            return false;
+        }
+        
         dly();
         if(SDA_READ) dat |=1;
         dly();
@@ -82,7 +90,8 @@ uint8_t i2c_bitbang_rx(bool ack)
     dly();
     SCL_LOW;
     SDA_HIGH;
-    return(dat);
+    *data = dat;
+    return(true);
 }
 
 

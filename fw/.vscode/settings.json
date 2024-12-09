@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "pindefs.h": "c"
+        "pindefs.h": "c",
+        "i2c_bitbang.h": "c"
     }
 }
