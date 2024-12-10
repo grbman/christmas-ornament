@@ -53,7 +53,7 @@ int main()
     PORTA.PIN7CTRL |= PORT_ISC_FALLING_gc;
     PORTA.INTFLAGS |= PORT_INT_7_bm;
 
-    // sei(); // Enable global interrupts
+    sei(); // Enable global interrupts
 
 
     led_init();
@@ -62,7 +62,7 @@ int main()
 
 
 
-    led_t led1, led2 = {0};
+    // led_t led1, led2 = {0};
     // led_update(led1, led2);
 
     uint8_t count = 0;
@@ -79,42 +79,13 @@ int main()
     PORTA.OUTSET = (1 << PORTA_I2C_PULLUP_PIN);
 
     // put CPU into idle mode
-    // SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
+    SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
 
         uint8_t i;
 
     while (1)
     {
-
-
- _delay_ms(1000);
-        //  printf("Data: \r\n");
-
-        // printf("\n");
-        // testcolor1.hue++;
-        // hsv2rgb_raw_avr(&testcolor1, &testcolor_out1);
-        // led1.r = testcolor_out1.r;
-        // led1.g = testcolor_out1.g;
-        // led1.b = testcolor_out1.b;
-        // led2.r = testcolor_out1.r;
-        // led2.g = testcolor_out1.g;
-        // led2.b = testcolor_out1.b;
-        // led_update(led1, led2);
-        // printf("hue: %d rgb: %d %d %d\n", testcolor.hue, testcolor_out.r, testcolor_out.g, testcolor_out.b);
-
-       read_params();
-        //  updi_uart_tx_str("idk\r\n");
-        // i = 0;
-        //  for(i=0; i < sizeof(headers); i++)
-        // {
-        //     printf("0x%02x ", ptr[i]);
-        //     // printf("%c ", data[i]);
-        // }
-        //          printf("\r\n");
-
-
     }
-    // while(1);
     return 0;
 }
 
@@ -126,59 +97,49 @@ volatile    uint8_t i = 0;
 // NFC write interrupt
 ISR(PORTA_PORT_vect)
 {
-    // cli();
+    cli();
 
     PORTA_INTFLAGS |= PORT_INT_7_bm; // Clear the PA0 interrupt flag
 
-    // nfc_write_flag = true;
+    nfc_write_flag = true;
 
-    // sei();
+    sei();
 
     // put CPU into idle mode
-    // SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
+    SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
 }
 
 // PWM underflow interrupt
 ISR(TCA0_LUNF_vect)
 {
     
-    // cli();
+    cli();
 
     TCA0.SPLIT.INTFLAGS |= TCA_SPLIT_LUNF_bm;
     // static led_t led1, led2 = {0};
-    // if (nfc_write_flag)
-    // {
-    //     // nfc_write_flag = false;
-    //     PORTA.OUTSET = (1 << PORTA_I2C_PULLUP_PIN);
-    //     nfc_write_debounce++;
-    // }
-    // // tBoot is 0.6ms
-    // if (nfc_write_debounce > 32)
-    // {
-    //     nfc_write_flag = false;
-    //         nfc_write_debounce = 0;
-    //     nfc_write_occurred = true;
-    // }
-    // if (nfc_write_occurred)
-    // {
-    //     nfc_write_occurred = false;
+    if (nfc_write_flag)
+    {
+        // nfc_write_flag = false;
+        PORTA.OUTSET = (1 << PORTA_I2C_PULLUP_PIN);
+        nfc_write_debounce++;
+    }
+    // tBoot is 0.6ms
+    if (nfc_write_debounce > 32)
+    {
+        nfc_write_flag = false;
+            nfc_write_debounce = 0;
+        nfc_write_occurred = true;
+    }
+    if (nfc_write_occurred)
+    {
+        nfc_write_occurred = false;
 
-
+        read_params();
     
+        PORTA.OUTCLR = (1 << PORTA_I2C_PULLUP_PIN);
+    }
 
-    //     // testcolor.hue++;
-    //     // hsv2rgb_raw(&testcolor, &testcolor_out);
-    //     // led1.r = testcolor_out.r;
-    //     // led1.g = testcolor_out.g;
-    //     // led1.b = testcolor_out.b;
-    //     // led2.r = testcolor_out.r;
-    //     // led2.g = testcolor_out.g;
-    //     // led2.b = testcolor_out.b;
-    //     // led_update(led1, led2);
-    //     // PORTA.OUTCLR = (1 << PORTA_I2C_PULLUP_PIN);
-    // }
-
-    // sei();
-    // // put CPU into idle mode
-    // // SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
+    sei();
+    // put CPU into idle mode
+    SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
 }
