@@ -24,7 +24,6 @@ void updi_uart_tx_str(char *str)
     }
 }
 // volatile uint8_t num_ints = 0;
- uint8_t data[60];
 const uint8_t addr = 0xA6;
  uint8_t result = 0;
 uint8_t reg = 0x00;
@@ -83,8 +82,7 @@ int main()
     // SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
 
         uint8_t i;
-        struct nfc_ndef_text_headers headers = {0};
-        uint8_t *ptr = (uint8_t *)&headers;
+
     while (1)
     {
 
@@ -104,8 +102,7 @@ int main()
         // led_update(led1, led2);
         // printf("hue: %d rgb: %d %d %d\n", testcolor.hue, testcolor_out.r, testcolor_out.g, testcolor_out.b);
 
-       
-            st25_read_user_reg(0x00, sizeof(headers), &headers);
+       read_params();
         //  updi_uart_tx_str("idk\r\n");
         // i = 0;
         //  for(i=0; i < sizeof(headers); i++)
@@ -114,20 +111,6 @@ int main()
         //     // printf("%c ", data[i]);
         // }
         //          printf("\r\n");
-
-        if(headers.nfc_tag == NDEF_TAG_MAGIC_NUM)
-        {
-            printf("payload_len: %d\r\n", headers.ndef_payload_len);
-        }
-        uint8_t text_addr, text_len;
-        if(headers.text_magic_num == TEXT_MAGIC_NUM)
-        {
-            text_addr = offsetof(headers_t, text_lang_type_len) + 1 + headers.text_lang_type_len;
-            text_len = headers.ndef_payload_len - 3;
-            st25_read_user_reg(text_addr, text_len, data);
-            printf("string: %s\r\n", data);
-
-        }
 
 
     }

@@ -10,12 +10,12 @@
 #define LED2_B_CMP TCA0.SPLIT.HCMP1 //WO4
 #define LED2_G_CMP TCA0.SPLIT.HCMP2 //WO5
 
-typedef struct
-{
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-} led_t;
+// typedef struct
+// {
+//     uint8_t r;
+//     uint8_t g;
+//     uint8_t b;
+// } led_t;
 
 /// Representation of an HSV pixel (hue, saturation, value (aka brightness)).
 struct CHSV {

@@ -50,7 +50,7 @@ void led_init()
 
 }
 
-void led_update(led_t led1, led_t led2)
+void led_update(struct CRGB led1, struct CRGB led2)
 {
     /* wait for counter to reach 0 before updating */
     while(TCA0.SPLIT.HCNT > 2);
