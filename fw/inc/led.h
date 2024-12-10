@@ -77,4 +77,9 @@ struct CRGB {
         uint8_t raw[3];
     };
 };
+
+
+void mode_rainbow();
+void mode_manual();
+
 #endif //LED_H

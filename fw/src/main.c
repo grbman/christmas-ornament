@@ -12,8 +12,6 @@
 #include "i2c_bitbang.h"
 #include "nfc.h"
 
-// #define __AVR_ATtiny404__
-
 void updi_uart_tx_str(char *str)
 {
     char *tmp = str;
@@ -23,27 +21,20 @@ void updi_uart_tx_str(char *str)
         tmp++;
     }
 }
-// volatile uint8_t num_ints = 0;
-const uint8_t addr = 0xA6;
- uint8_t result = 0;
-uint8_t reg = 0x00;
 
   struct CHSV testcolor;
     struct CRGB testcolor_out;
+void (*leds_next)();
 
 int main()
 {
     // clk setup
-    // use 20MHz oscillator, no clk output
+    // unlock clock regs
+    // use 32768kHz oscillator, no clk output
     CPU_CCP = CCP_IOREG_gc;
     CLKCTRL.MCLKCTRLA = CLKCTRL_CLKSEL_OSCULP32K_gc;
-    // prescale by 10, enable prescalar
     CPU_CCP = CCP_IOREG_gc;
-    CLKCTRL.MCLKCTRLB = 0; // CLKCTRL_PDIV_64X_gc | CLKCTRL_PEN_bm;
-
-    // //PORT A Direction for NFC interrupt
-    // //TODO: add interrupt settings
-    // PORTA.DIR |= (0 << PORTA_NFC_INT_PIN);
+    CLKCTRL.MCLKCTRLB = 0;
 
     /* set default GPIO direction to input */
     PORTA.DIR = 0;
@@ -55,15 +46,9 @@ int main()
 
     sei(); // Enable global interrupts
 
-
     led_init();
     i2c_bitbang_init();
     updi_stdio_init(); // redirect stdin/stdout
-
-
-
-    // led_t led1, led2 = {0};
-    // led_update(led1, led2);
 
     uint8_t count = 0;
 
@@ -81,8 +66,6 @@ int main()
     // put CPU into idle mode
     SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
 
-        uint8_t i;
-
     while (1)
     {
     }
@@ -92,7 +75,6 @@ int main()
 volatile bool nfc_write_occurred = false;
 volatile bool nfc_write_flag = false;
 volatile uint16_t nfc_write_debounce = 0;
-volatile    uint8_t i = 0;
 
 // NFC write interrupt
 ISR(PORTA_PORT_vect)
@@ -112,7 +94,6 @@ ISR(PORTA_PORT_vect)
 // PWM underflow interrupt
 ISR(TCA0_LUNF_vect)
 {
-    
     cli();
 
     TCA0.SPLIT.INTFLAGS |= TCA_SPLIT_LUNF_bm;
@@ -133,10 +114,14 @@ ISR(TCA0_LUNF_vect)
     if (nfc_write_occurred)
     {
         nfc_write_occurred = false;
-
         read_params();
-    
         PORTA.OUTCLR = (1 << PORTA_I2C_PULLUP_PIN);
+    }
+
+    // set next LED values
+    if(leds_next)
+    {
+        leds_next();
     }
 
     sei();

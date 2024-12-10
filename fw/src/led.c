@@ -1,5 +1,9 @@
 #include "led.h"
 
+struct CRGB manual_color;
+
+
+
 void led_init()
 {
     /* hard reset TCA0 */
@@ -61,6 +65,26 @@ void led_update(struct CRGB led1, struct CRGB led2)
     LED2_R_CMP = led2.r;// == 255 ? 254 : led2.r;
     LED2_G_CMP = led2.g;// == 255 ? 254 : led2.g;
     LED2_B_CMP = led2.b;// == 255 ? 254 : led2.b;
+}
+
+void mode_rainbow()
+{
+    static struct CHSV hsv = {0, 255, 255};
+    struct CRGB rgb;
+    hsv.hue++;
+    hsv2rgb_raw(&hsv, &rgb);
+    led_update(rgb, rgb);
+
+}
+void update_manual_color(struct CRGB color)
+{
+    manual_color.r = color.r;
+    manual_color.g = color.g;
+    manual_color.b = color.b;
+}
+void mode_manual()
+{
+    led_update(manual_color, manual_color);
 }
 
 #define LIB8STATIC_ALWAYS_INLINE __attribute__ ((always_inline)) static inline

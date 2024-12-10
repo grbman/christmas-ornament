@@ -7,6 +7,8 @@ headers_t headers = {0};
 uint8_t *ptr = (uint8_t *)&headers;
 uint8_t data[64];
 
+extern void (*leds_next)();
+
 void read_params()
 {
     char *strtok_ptr;
@@ -100,6 +102,14 @@ void parse_params(char *str)
     // printf("param: %s arg: %s\n", param, arg);
     if(strncasecmp("mode", param, 32) == 0)
     {
+        if(strncasecmp("rainbow", arg, 32) == 0)
+        {
+           leds_next = mode_rainbow;
+        } 
+        else if(strncasecmp("manual", arg, 32) == 0)
+        {
+           leds_next = mode_manual;
+        }
         // printf("mode found\n");
 
     } 
@@ -108,12 +118,21 @@ void parse_params(char *str)
         struct CRGB led;
         if(hex_to_uint8(&arg[0], &led.r) && hex_to_uint8(&arg[2], &led.g) && hex_to_uint8(&arg[4], &led.b))
         {
-            led_update(led, led);
+            update_manual_color(led);
         }
 
     }
     else if(strncasecmp("power", param, 32) == 0)
     {
+        // printf("power found\n");
+
+    }
+     else if(strncasecmp("pattern", param, 32) == 0)
+    {
+        if(strncasecmp("glow", arg, 32) == 0)
+        {
+
+        }
         // printf("power found\n");
 
     }
