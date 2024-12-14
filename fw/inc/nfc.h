@@ -13,6 +13,8 @@
 #define NFC_TLV_LEN_OFFSET 0x05
 #define NFC_TLV_VAL_OFFSET 0x06
 
+#define STRNCMP_LEN 32U
+
 typedef struct nfc_ndef_text_headers
 {
     uint8_t ccfile[4];

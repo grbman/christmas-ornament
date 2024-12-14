@@ -5,9 +5,10 @@
 #include "led.h"
 headers_t headers = {0};
 uint8_t *ptr = (uint8_t *)&headers;
-uint8_t data[64];
+uint8_t data[96];
 
 extern void (*leds_next)();
+extern void (*brightness_next)(uint8_t *);
 
 void read_params()
 {
@@ -38,6 +39,7 @@ void read_params()
         // delimiters present in str[].
         while (token != NULL) {
             // printf(" % s\n", token);
+            brightness_next = NULL;
             parse_params(token);
 
             token = strtok_r(NULL, " ", &strtok_ptr);
@@ -89,7 +91,7 @@ void parse_params(char *str)
     char* token = strtok_r(strtok_ptr, ":", &strtok_ptr);
     char* param = token;
     char* arg;
-
+    bool pattern_found = false;
     // Keep printing tokens while one of the
     // delimiters present in str[].
     while (token != NULL) 
@@ -100,39 +102,170 @@ void parse_params(char *str)
         token = strtok_r(NULL, ":", &strtok_ptr);
     }
     // printf("param: %s arg: %s\n", param, arg);
-    if(strncasecmp("mode", param, 32) == 0)
+    if(strncasecmp("mode", param, STRNCMP_LEN) == 0)
     {
-        if(strncasecmp("rainbow", arg, 32) == 0)
+        if(strncasecmp("rainbow", arg, STRNCMP_LEN) == 0)
         {
            leds_next = mode_rainbow;
         } 
-        else if(strncasecmp("manual", arg, 32) == 0)
+        else if(strncasecmp("custom", arg, STRNCMP_LEN) == 0)
         {
            leds_next = mode_manual;
         }
         // printf("mode found\n");
 
     } 
-    else if(strncasecmp("color", param, 32) == 0)
+    else if(strncasecmp("left", param, STRNCMP_LEN) == 0)
+    {
+        struct CRGB led = {0};
+        if(strncasecmp("red", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 255;
+            led.g = 0;
+            led.b = 0;
+            update_manual_color_left(led);
+        }
+        else if(strncasecmp("orange", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 255;
+            led.g = 50;
+            led.b = 0;
+            update_manual_color_left(led);
+        }
+        else if(strncasecmp("yellow", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 255;
+            led.g = 100;
+            led.b = 0;
+            update_manual_color_left(led);
+        }
+        else if(strncasecmp("green", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 0;
+            led.g = 255;
+            led.b = 0;
+
+            update_manual_color_left(led);
+        }
+        else if(strncasecmp("blue", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 0;
+            led.g = 0;
+            led.b = 255;
+            update_manual_color_left(led);
+        }
+        else if(strncasecmp("cyan", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 0;
+            led.g = 255;
+            led.b = 255;
+            update_manual_color_left(led);
+        }
+        else if(strncasecmp("purple", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 127;
+            led.g = 0;
+            led.b = 127;
+            update_manual_color_left(led);
+
+        }
+        else if(hex_to_uint8(&arg[0], &led.r) && hex_to_uint8(&arg[2], &led.g) && hex_to_uint8(&arg[4], &led.b))
+        {
+            update_manual_color_left(led);
+        }
+
+    }
+    else if(strncasecmp("right", param, STRNCMP_LEN) == 0)
     {
         struct CRGB led;
-        if(hex_to_uint8(&arg[0], &led.r) && hex_to_uint8(&arg[2], &led.g) && hex_to_uint8(&arg[4], &led.b))
+        if(strncasecmp("red", arg, STRNCMP_LEN) == 0)
         {
-            update_manual_color(led);
+            led.r = 255;
+            led.g = 0;
+            led.b = 0;
+            update_manual_color_right(led);
+        }
+        else if(strncasecmp("orange", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 255;
+            led.g = 50;
+            led.b = 0;
+            update_manual_color_right(led);
+        }
+        else if(strncasecmp("yellow", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 255;
+            led.g = 100;
+            led.b = 0;
+            update_manual_color_right(led);
+        }
+        else if(strncasecmp("green", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 0;
+            led.g = 255;
+            led.b = 0;
+
+            update_manual_color_right(led);
+        }
+        else if(strncasecmp("blue", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 0;
+            led.g = 0;
+            led.b = 255;
+            update_manual_color_right(led);
+        }
+        else if(strncasecmp("cyan", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 0;
+            led.g = 255;
+            led.b = 255;
+            update_manual_color_right(led);
+        }
+        else if(strncasecmp("purple", arg, STRNCMP_LEN) == 0)
+        {
+            led.r = 127;
+            led.g = 0;
+            led.b = 127;
+            update_manual_color_right(led);
+
+        }
+        else if(hex_to_uint8(&arg[0], &led.r) && hex_to_uint8(&arg[2], &led.g) && hex_to_uint8(&arg[4], &led.b))
+        {
+            update_manual_color_right(led);
         }
 
     }
-    else if(strncasecmp("power", param, 32) == 0)
+    else if(strncasecmp("power", param, STRNCMP_LEN) == 0)
     {
-        // printf("power found\n");
+        
+         if(strncasecmp("low", arg, STRNCMP_LEN) == 0)
+        {
+            power_set(32);
+        }
+        else if(strncasecmp("med", arg, STRNCMP_LEN) == 0)
+        {
+            power_set(64);
+        }
+        else if(strncasecmp("high", arg, STRNCMP_LEN) == 0)
+        {
+            power_set(255);
+        }
 
     }
-     else if(strncasecmp("pattern", param, 32) == 0)
+     else if(strncasecmp("pattern", param, STRNCMP_LEN) == 0)
     {
-        if(strncasecmp("glow", arg, 32) == 0)
+        if(strncasecmp("glow", arg, STRNCMP_LEN) == 0)
         {
-
+            brightness_next = brightness_glow;
         }
+        else if(strncasecmp("pingpong", arg, STRNCMP_LEN) == 0)
+        {
+            brightness_next = brightness_pingpong;
+        }
+        // else
+        // {
+        //     brightness_next = NULL;
+        // }
         // printf("power found\n");
 
     }

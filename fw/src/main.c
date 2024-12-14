@@ -12,19 +12,8 @@
 #include "i2c_bitbang.h"
 #include "nfc.h"
 
-void updi_uart_tx_str(char *str)
-{
-    char *tmp = str;
-    while (tmp)
-    {
-        putchar(*tmp);
-        tmp++;
-    }
-}
-
-  struct CHSV testcolor;
-    struct CRGB testcolor_out;
 void (*leds_next)();
+volatile bool nfc_write_flag = false;
 
 int main()
 {
@@ -52,16 +41,11 @@ int main()
 
     uint8_t count = 0;
 
-     struct CHSV testcolor1;
-    struct CRGB testcolor_out1;
-
-    testcolor1.hue = 0;
-    testcolor1.saturation = 255;
-    testcolor1.value = 255;
-
     // turn on i2c pullups
     PORTA.DIRSET = (1 << PORTA_I2C_PULLUP_PIN);
-    PORTA.OUTSET = (1 << PORTA_I2C_PULLUP_PIN);
+
+    //manually trigger read
+    nfc_write_flag = true;  
 
     // put CPU into idle mode
     SLPCTRL.CTRLA |= SLPCTRL_SMODE_IDLE_gc;
@@ -73,7 +57,6 @@ int main()
 }
 
 volatile bool nfc_write_occurred = false;
-volatile bool nfc_write_flag = false;
 volatile uint16_t nfc_write_debounce = 0;
 
 // NFC write interrupt

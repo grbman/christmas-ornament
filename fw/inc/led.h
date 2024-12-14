@@ -10,13 +10,12 @@
 #define LED2_B_CMP TCA0.SPLIT.HCMP1 //WO4
 #define LED2_G_CMP TCA0.SPLIT.HCMP2 //WO5
 
-// typedef struct
-// {
-//     uint8_t r;
-//     uint8_t g;
-//     uint8_t b;
-// } led_t;
+#define LED_UPDATE_TIMER_VAL 1
 
+/* for some reason FastLED's HSV algorithm only goew up to 191 */
+#define HSV_MAX_HUE 191
+#define SCALE8_AVRASM 1
+#define FASTLED_SCALE8_FIXED 1
 /// Representation of an HSV pixel (hue, saturation, value (aka brightness)).
 struct CHSV {
     union {
@@ -78,8 +77,11 @@ struct CRGB {
     };
 };
 
-
+void hsv2rgb_raw(struct CHSV *hsv, struct CRGB *rgb);
 void mode_rainbow();
 void mode_manual();
+void brightness_glow(uint8_t *brightness_left, uint8_t *brightness_right);
+void brightness_pingpong(uint8_t *brightness_left, uint8_t *brightness_right);
 
+__attribute__ ((always_inline)) static inline uint8_t scale8(uint8_t i, uint8_t scale);
 #endif //LED_H

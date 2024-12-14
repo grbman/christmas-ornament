@@ -1,8 +1,10 @@
 #include "led.h"
 
-struct CRGB manual_color;
+struct CRGB manual_color_left;
+struct CRGB manual_color_right;
 
-
+void (*brightness_next)(uint8_t *, uint8_t *);
+uint8_t max_power = 32;
 
 void led_init()
 {
@@ -54,38 +56,157 @@ void led_init()
 
 }
 
-void led_update(struct CRGB led1, struct CRGB led2)
+void led_update(struct CRGB led_left, struct CRGB led_right)
 {
     /* wait for counter to reach 0 before updating */
-    while(TCA0.SPLIT.HCNT > 2);
+    while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
+    LED1_R_CMP = led_left.r;// == 255 ? 254 : led1.r;
 
-    LED1_R_CMP = led1.r;// == 255 ? 254 : led1.r;
-    LED1_G_CMP = led1.g;// == 255 ? 254 : led1.g;
-    LED1_B_CMP = led1.b;// == 255 ? 254 : led1.b;
-    LED2_R_CMP = led2.r;// == 255 ? 254 : led2.r;
-    LED2_G_CMP = led2.g;// == 255 ? 254 : led2.g;
-    LED2_B_CMP = led2.b;// == 255 ? 254 : led2.b;
+    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
+    LED1_G_CMP = led_left.g;// == 255 ? 254 : led1.g;
+
+    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
+    LED1_B_CMP = led_left.b;// == 255 ? 254 : led1.b;
+       
+    while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
+    LED2_R_CMP = led_right.r;// == 255 ? 254 : led2.r;
+      
+    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
+    LED2_G_CMP = led_right.g;// == 255 ? 254 : led2.g;
+    
+    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
+    LED2_B_CMP = led_right.b;// == 255 ? 254 : led2.b;
 }
 
 void mode_rainbow()
 {
     static struct CHSV hsv = {0, 255, 255};
-    struct CRGB rgb;
-    hsv.hue++;
-    hsv2rgb_raw(&hsv, &rgb);
-    led_update(rgb, rgb);
+    static uint8_t prescale = 0;
+
+    if(prescale++ > 3)
+    {
+        prescale = 0;
+        hsv.hue++;
+        if(hsv.hue > HSV_MAX_HUE)
+        {
+            hsv.hue = 0;
+        }
+        struct CRGB color_left, color_right, color_rainbow;
+        uint8_t brightness_left, brightness_right = 0;
+        if(brightness_next)
+        {
+            brightness_next(&brightness_left, &brightness_right);
+        }
+        hsv2rgb_raw(&hsv, &color_rainbow);
+        color_left.r = scale8(scale8(color_rainbow.r, brightness_left), max_power);
+        color_left.g = scale8(scale8(color_rainbow.g, brightness_left), max_power);
+        color_left.b = scale8(scale8(color_rainbow.b, brightness_left), max_power);
+        color_right.r = scale8(scale8(color_rainbow.r, brightness_right), max_power);
+        color_right.g = scale8(scale8(color_rainbow.g, brightness_right), max_power);
+        color_right.b = scale8(scale8(color_rainbow.b, brightness_right), max_power);
+        led_update(color_left, color_right);
+    }
+   
 
 }
-void update_manual_color(struct CRGB color)
+void update_manual_color_left(struct CRGB color)
 {
-    manual_color.r = color.r;
-    manual_color.g = color.g;
-    manual_color.b = color.b;
+    manual_color_left.r = color.r;
+    manual_color_left.g = color.g;
+    manual_color_left.b = color.b;
+}
+void update_manual_color_right(struct CRGB color)
+{
+    manual_color_right.r = color.r;
+    manual_color_right.g = color.g;
+    manual_color_right.b = color.b;
 }
 void mode_manual()
 {
-    led_update(manual_color, manual_color);
+    struct CRGB color_left, color_right;
+    uint8_t brightness_left, brightness_right = 0;
+    if(brightness_next)
+    {
+        brightness_next(&brightness_left, &brightness_right);
+    }
+    color_left.r = scale8(manual_color_left.r, brightness_left);
+    color_left.r = scale8(color_left.r, max_power);
+    color_left.g = scale8(manual_color_left.g, brightness_left);
+    color_left.g = scale8(color_left.g, max_power);
+    color_left.b = scale8(manual_color_left.b, brightness_left);
+    color_left.b = scale8(color_left.b, max_power);
+
+    color_right.r = scale8(manual_color_right.r, brightness_right);
+    color_right.r = scale8(color_right.r, max_power);
+    color_right.g = scale8(manual_color_right.g, brightness_right);
+    color_right.g = scale8(color_right.g, max_power);
+    color_right.b = scale8(manual_color_right.b, brightness_right);
+    color_right.b = scale8(color_right.b, max_power);
+    led_update(color_left, color_right);
 }
+void power_set(uint8_t power)
+{
+    max_power = power;
+}
+void brightness_glow(uint8_t *brightness_left, uint8_t *brightness_right)
+{
+    static uint8_t ctr = 0;
+    static uint8_t dir = 1;
+    // uint8_t ctr_top = 50;
+
+    if(dir)
+    {
+        ctr+=2;
+    }
+    else
+    {
+        ctr-=2;
+    }
+
+    if(ctr == 254)
+    {
+        // ctr = ctr_top;
+
+        dir = 0;
+    }
+    if(ctr == 0)
+    {
+        dir = 1;
+    }
+    *brightness_left = ctr;
+    *brightness_right = ctr;
+}
+
+void brightness_pingpong(uint8_t *brightness_left, uint8_t *brightness_right)
+{
+    static uint8_t ctr = 0;
+    static uint8_t dir = 1;
+    // uint8_t ctr_top = 50;
+    if(dir)
+    {
+        ctr+=4;
+    }
+    else
+    {
+        ctr-=4;
+    }
+
+    if(ctr == 252)
+    {
+        // ctr = ctr_top;
+        dir = 0;
+    }
+    if(ctr == 0)
+    {
+        dir = 1;
+    }
+    *brightness_left = ctr;
+    *brightness_right = 252 - ctr;
+}
+
+
+
+
 
 #define LIB8STATIC_ALWAYS_INLINE __attribute__ ((always_inline)) static inline
 /// Clean up the r1 register after a series of *LEAVING_R1_DIRTY calls
@@ -309,3 +430,88 @@ void hsv2rgb_raw_avr(struct CHSV *hsv, struct CRGB *rgb)
 // End of AVR asm implementation
 
 #endif
+
+
+/// Because of the AVR(Arduino) and ARM assembly language
+/// implementations provided, using these functions often
+/// results in smaller and faster code than the equivalent
+/// program using plain "C" arithmetic and logic.
+/// @{
+
+/// Scale one byte by a second one, which is treated as
+/// the numerator of a fraction whose denominator is 256.
+///
+/// In other words, it computes i * (scale / 256)
+/// @param i input value to scale
+/// @param scale scale factor, in n/256 units
+/// @returns scaled value
+/// @note Takes 4 clocks on AVR with MUL, 2 clocks on ARM
+__attribute__ ((always_inline)) static inline uint8_t scale8(uint8_t i, uint8_t scale) {
+#if SCALE8_C == 1
+#if (FASTLED_SCALE8_FIXED == 1)
+    return (((uint16_t)i) * (1 + (uint16_t)(scale))) >> 8;
+#else
+    return ((uint16_t)i * (uint16_t)(scale)) >> 8;
+#endif
+#elif SCALE8_AVRASM == 1
+#if defined(LIB8_ATTINY)
+#if (FASTLED_SCALE8_FIXED == 1)
+    uint8_t work = i;
+#else
+    uint8_t work = 0;
+#endif
+    uint8_t cnt = 0x80;
+    asm volatile(
+#if (FASTLED_SCALE8_FIXED == 1)
+        "  inc %[scale]                 \n\t"
+        "  breq DONE_%=                 \n\t"
+        "  clr %[work]                  \n\t"
+#endif
+        "LOOP_%=:                       \n\t"
+        /*"  sbrc %[scale], 0             \n\t"
+        "  add %[work], %[i]            \n\t"
+        "  ror %[work]                  \n\t"
+        "  lsr %[scale]                 \n\t"
+        "  clc                          \n\t"*/
+        "  sbrc %[scale], 0             \n\t"
+        "  add %[work], %[i]            \n\t"
+        "  ror %[work]                  \n\t"
+        "  lsr %[scale]                 \n\t"
+        "  lsr %[cnt]                   \n\t"
+        "brcc LOOP_%=                   \n\t"
+        "DONE_%=:                       \n\t"
+        : [work] "+r"(work), [cnt] "+r"(cnt)
+        : [scale] "r"(scale), [i] "r"(i)
+        :);
+    return work;
+#else
+    asm volatile(
+#if (FASTLED_SCALE8_FIXED == 1)
+        // Multiply 8-bit i * 8-bit scale, giving 16-bit r1,r0
+        "mul %0, %1          \n\t"
+        // Add i to r0, possibly setting the carry flag
+        "add r0, %0         \n\t"
+        // load the immediate 0 into i (note, this does _not_ touch any flags)
+        "ldi %0, 0x00       \n\t"
+        // walk and chew gum at the same time
+        "adc %0, r1          \n\t"
+#else
+        /* Multiply 8-bit i * 8-bit scale, giving 16-bit r1,r0 */
+        "mul %0, %1          \n\t"
+        /* Move the high 8-bits of the product (r1) back to i */
+        "mov %0, r1          \n\t"
+    /* Restore r1 to "0"; it's expected to always be that */
+#endif
+        "clr __zero_reg__    \n\t"
+
+        : "+d"(i)    /* writes to i; r16-r31, restricted by ldi */
+        : "r"(scale) /* uses scale */
+        : "r0", "r1" /* clobbers r0, r1 */
+    );
+    /* Return the result */
+    return i;
+#endif
+#else
+#error "No implementation for scale8 available."
+#endif
+}
