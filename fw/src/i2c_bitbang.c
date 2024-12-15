@@ -73,7 +73,6 @@ bool i2c_bitbang_rx(bool ack, uint8_t *data, uint8_t timeout)
         dat <<= 1;
         do{
             SCL_HIGH;
-        // }while(SCL_READ == 0 );
         }while(SCL_READ == 0 && timeout_cnt++ < timeout);  //clock stretching
         if(timeout_cnt == timeout)
         {

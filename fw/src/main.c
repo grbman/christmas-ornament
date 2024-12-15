@@ -80,10 +80,8 @@ ISR(TCA0_LUNF_vect)
     cli();
 
     TCA0.SPLIT.INTFLAGS |= TCA_SPLIT_LUNF_bm;
-    // static led_t led1, led2 = {0};
     if (nfc_write_flag)
     {
-        // nfc_write_flag = false;
         PORTA.OUTSET = (1 << PORTA_I2C_PULLUP_PIN);
         nfc_write_debounce++;
     }

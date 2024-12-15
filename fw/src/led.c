@@ -62,19 +62,15 @@ void led_update(struct CRGB led_left, struct CRGB led_right)
     while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
     LED1_R_CMP = led_left.r;// == 255 ? 254 : led1.r;
 
-    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
     LED1_G_CMP = led_left.g;// == 255 ? 254 : led1.g;
 
-    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
     LED1_B_CMP = led_left.b;// == 255 ? 254 : led1.b;
        
     while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
     LED2_R_CMP = led_right.r;// == 255 ? 254 : led2.r;
       
-    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
     LED2_G_CMP = led_right.g;// == 255 ? 254 : led2.g;
     
-    // while(TCA0.SPLIT.HCNT > LED_UPDATE_TIMER_VAL);
     LED2_B_CMP = led_right.b;// == 255 ? 254 : led2.b;
 }
 
@@ -152,7 +148,6 @@ void brightness_glow(uint8_t *brightness_left, uint8_t *brightness_right)
 {
     static uint8_t ctr = 0;
     static uint8_t dir = 1;
-    // uint8_t ctr_top = 50;
 
     if(dir)
     {
@@ -165,7 +160,6 @@ void brightness_glow(uint8_t *brightness_left, uint8_t *brightness_right)
 
     if(ctr == 254)
     {
-        // ctr = ctr_top;
 
         dir = 0;
     }
@@ -181,7 +175,6 @@ void brightness_pingpong(uint8_t *brightness_left, uint8_t *brightness_right)
 {
     static uint8_t ctr = 0;
     static uint8_t dir = 1;
-    // uint8_t ctr_top = 50;
     if(dir)
     {
         ctr+=4;
@@ -193,7 +186,6 @@ void brightness_pingpong(uint8_t *brightness_left, uint8_t *brightness_right)
 
     if(ctr == 252)
     {
-        // ctr = ctr_top;
         dir = 0;
     }
     if(ctr == 0)

@@ -25,7 +25,6 @@ typedef struct nfc_ndef_text_headers
     uint8_t ndef_payload_len;
     uint8_t text_magic_num;
     uint8_t text_lang_type_len; //assuming english
-    // uint8_t lang_type[2];
 } headers_t;
 
 

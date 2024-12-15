@@ -29,16 +29,13 @@ void read_params()
         text_len = headers.ndef_payload_len - (1 + headers.text_lang_type_len);
         st25_read_user_reg(text_addr, text_len, data);
         data[text_len] = 0;
-        // printf("string: %s\r\n", data);
 
         strtok_ptr = data;
         // Returns first token
         char* token = strtok_r(strtok_ptr, " ", &strtok_ptr);
-        //  parse_params(token);
         // Keep printing tokens while one of the
         // delimiters present in str[].
         while (token != NULL) {
-            // printf(" % s\n", token);
             brightness_next = NULL;
             parse_params(token);
 
@@ -57,13 +54,11 @@ bool hex_to_uint8(const char *hex_str, uint8_t *val) {
         // Handle error if the string length is not exactly 2 characters
         return false;
     }
-    // printf("? %c%c\n", hex_str[0], hex_str[1]);
     uint8_t result = 0;
 
     // Parse each character (hex_str[0] and hex_str[1])
     for (int i = 2; i > 0; i--) {
         char c = hex_str[2-i];
-    // printf("%c\n", c);
 
         if (c >= '0' && c <= '9') {
             result += ((c - '0') * ((i-1)> 0 ? 16 : 1));  // '0' -> 0, '1' -> 1, ..., '9' -> 9
@@ -75,7 +70,6 @@ bool hex_to_uint8(const char *hex_str, uint8_t *val) {
             // Invalid character in hex string
             return false;
         }
-        // printf("res: %d\n", result);
 
     }
     *val = result;
@@ -96,12 +90,10 @@ void parse_params(char *str)
     // delimiters present in str[].
     while (token != NULL) 
     {
-        // printf(" % s\n", token);
         arg = token;
 
         token = strtok_r(NULL, ":", &strtok_ptr);
     }
-    // printf("param: %s arg: %s\n", param, arg);
     if(strncasecmp("mode", param, STRNCMP_LEN) == 0)
     {
         if(strncasecmp("rainbow", arg, STRNCMP_LEN) == 0)
@@ -112,7 +104,6 @@ void parse_params(char *str)
         {
            leds_next = mode_manual;
         }
-        // printf("mode found\n");
 
     } 
     else if(strncasecmp("left", param, STRNCMP_LEN) == 0)
@@ -262,11 +253,5 @@ void parse_params(char *str)
         {
             brightness_next = brightness_pingpong;
         }
-        // else
-        // {
-        //     brightness_next = NULL;
-        // }
-        // printf("power found\n");
-
     }
 }

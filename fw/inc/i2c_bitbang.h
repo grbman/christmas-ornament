@@ -17,7 +17,5 @@
 
 void dly();
 
-// void dly();
-
 
 #endif //I2C_BITBANG_H
